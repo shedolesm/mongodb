@@ -1,0 +1,87 @@
+1) db.stats()
+2) use fdp
+3) show dbs
+4)db.dropDatabase()
+5)db.createCollection(name, options)
+	ex: db.createCollection("mycol", { capped : true, autoIndexID : true, size : 6142800, max : 10000 } )
+6)db.createCollection('student')
+7) show collections
+8)db.student.insert({'name':'Yogesh'}
+9)db.student.insert({'Roll_no': 22,'name':'Ram',}
+10)db.COLLECTION_NAME.drop()
+11)db.fdp.drop();
+12)>db.mycol.insert({
+_id: ObjectId(7df78ad8902c),
+title: 'MongoDB Overview',
+description: 'MongoDB is no sql database',
+by: 'tutorials point',
+url: 'http://www.tutorialspoint.com',
+tags: ['mongodb', 'database', 'NoSQL'],
+likes: 100
+})
+13)db.mycol.find().pretty()
+14)db.student.find({likes:{$lt:150}})
+15)db.student.find({likes:{$lte:150}})
+16)db.student.find({likes:{$gt:150}})
+17)db.student.find({likes:{$gte:150}})
+18)db.student.find({likes:{$ne:150}})
+
+AND in Mongodb
+
+19)>db.mycol.find({key1:value1, key2:value2}).pretty()
+20)db.student.find({Name:'Ram', likes:200})
+
+OR in Mongodb
+syntax:  db.mycol.find(
+	{
+	$or: [
+	{key1: value1}, {key2:value2}
+	     ]
+	}
+		      ).pretty()
+
+21)db.student.find({$or:[{Name:'Ram'}, {likes:200}]})
+
+Comibination And OR in Mongodb
+
+22)db.student.find(likes:{$gte:150},{$or:[{Name:'Ram'}, {likes:200}]})
+
+Update
+synatx: db.COLLECTION_NAME.update(SELECTIOIN_CRITERIA, UPDATED_DATA)
+23)db.student.update({Roll_no:9},{$set:{Roll_no:19}}) // default only one
+Multi Update:
+24) db.student.update({Roll_no:9},{$set:{Roll_no:19}},{multi:true})
+
+Remove Collections
+
+25)db.student.remove({Roll_no:8})
+26)db.student.remove({Roll_no:2}) (multiple)
+27)db.student.remove({Roll_no:2},1)(One)
+28)db.mycol.remove() (Remove all documents from collections)
+
+Find()
+29)db.student.find().pretty();
+30)db.student.find(conditions);
+
+limit()
+31)db.student.limit(1);
+
+skip()
+
+32) db.student.skip(2);
+
+sort()
+
+33)db.student.find().sort({Roll_no:1}); //(asecending)
+34)db.student.find().sort({Roll_no:-1});//(desc)
+
+Creting Index in mongodb
+
+35) db.student.ensureIndex({"Roll_no":1}) //(1 for asec, -1 for desc)
+
+ aggregate() Method
+
+36) syntax db.COLLECTION_NAME.aggregate(AGGREGATE_OPERATION)
+37) db.student.count();
+38)db.runCommand({distinct:"student",key:"Roll_no"}); //(Coll_name,Key)
+

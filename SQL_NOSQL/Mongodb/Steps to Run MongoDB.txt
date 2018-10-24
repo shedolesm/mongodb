@@ -1,0 +1,194 @@
+*****************************************************
+Steps to Run MongoDB Query:
+*****************************************************
+1. Install MongoDB setup
+2. Open "C:\Program Files (x86)\MongoDB\Server\3.0\bin"
+3. mongod.exe ==> Server file
+   mongo.exe ==> Client file
+4. Create Folder like "D:\TEC\data\db"
+5. Run MongoDB Server
+     -> Open Command prompt as Administrator
+     -> cd C:\Program Files (x86)\MongoDB\Server\3.0\bin
+     -> mongod.exe --dbpath "D:\TEC\data\db"
+6. Run MongoDB Client
+     -> Open Second Command prompt
+     -> cd C:\Program Files (x86)\MongoDB\Server\3.0\bin
+     -> mongo.exe
+7.db; //Shows the Current Database Name(Default DB name is "test")
+8. use TEC; // Switch to "TEC" Database
+9. db.student.insert({name:"amit",Roll_no:1,sub:"TOC",Marks:80});
+   db.student.insert({name:"Xyz",Roll_no:2,sub:"DMSA",Marks:50});
+   db.student.insert({name:"ABC",Roll_no:3,sub:"OSD"});
+
+   db.student.find().count(); 
+   db.student.find().sort({Marks:1});
+*****************************************************
+Steps to Run MongoDB Program:
+
+{
+   "rollno": 1,
+   "name": "amit",
+   "sub":"DMSA"
+}
+
+Now, we will use a mapReduce function on our posts collection to select all the active posts, group them on the basis of user_name and then count the number of posts by each user using the following code -
+
+>db.student.mapReduce( 
+   function() { emit(this.user_id,1); }, 
+	
+   function(key, values) {return Array.sum(values)}, {  
+      query:{sub:"DMSA"},  
+      out:"student_total" 
+   }
+)
+//***********************output****************
+Microsoft Windows [Version 6.1.7601]
+Copyright (c) 2009 Microsoft Corporation.  All rights reserved.
+
+C:\Windows\system32>cd\
+
+C:\>cd C:\Program Files\MongoDB\Server\3.0\bin
+
+C:\Program Files\MongoDB\Server\3.0\bin>mongo.exe
+2016-09-25T23:27:13.444-0700 I CONTROL  Hotfix KB2731284 or later update is not
+installed, will zero-out data files
+MongoDB shell version: 3.0.1
+connecting to: test
+Welcome to the MongoDB shell.
+For interactive help, type "help".
+For more comprehensive documentation, see
+        http://docs.mongodb.org/
+Questions? Try the support group
+        http://groups.google.com/group/mongodb-user
+> db
+test
+> use B1
+switched to db B1
+> db.createCollection("student")
+{ "ok" : 1 }
+> db.student.insert(rollno:1,name: "amit");
+2016-09-25T23:29:43.342-0700 E QUERY    SyntaxError: Unexpected token :
+> db.student.insert({name:"amit",Roll_no:1,sub:"TOC",Marks:80});
+WriteResult({ "nInserted" : 1 })
+> db.student.insert({name:"amita",Roll_no:2,sub:"DMSA",Marks:80});
+WriteResult({ "nInserted" : 1 })
+>  db.student.insert({name:"Xyz",Roll_no:3,sub:"OSD",Marks:70})
+WriteResult({ "nInserted" : 1 })
+> db.student.find();
+{ "_id" : ObjectId("57e8c0a6f6b3ccdccb661038"), "name" : "amit", "Roll_no" : 1,
+"sub" : "TOC", "Marks" : 80 }
+{ "_id" : ObjectId("57e8c0b9f6b3ccdccb661039"), "name" : "amita", "Roll_no" : 2,
+ "sub" : "DMSA", "Marks" : 80 }
+{ "_id" : ObjectId("57e8c113f6b3ccdccb66103a"), "name" : "Xyz", "Roll_no" : 3, "
+sub" : "OSD", "Marks" : 70 }
+> db.student.find().PRETTY();
+2016-09-25T23:33:12.866-0700 E QUERY    TypeError: Object DBQuery: B1.student ->
+ { } has no method 'PRETTY'
+    at (shell):1:19
+> db.student.find().pretty();
+{
+        "_id" : ObjectId("57e8c0a6f6b3ccdccb661038"),
+        "name" : "amit",
+        "Roll_no" : 1,
+        "sub" : "TOC",
+        "Marks" : 80
+}
+{
+        "_id" : ObjectId("57e8c0b9f6b3ccdccb661039"),
+        "name" : "amita",
+        "Roll_no" : 2,
+        "sub" : "DMSA",
+        "Marks" : 80
+}
+{
+        "_id" : ObjectId("57e8c113f6b3ccdccb66103a"),
+        "name" : "Xyz",
+        "Roll_no" : 3,
+        "sub" : "OSD",
+        "Marks" : 70
+}
+> db.student.ensureIndex({Roll_no:1
+...
+...
+> db.student.ensureIndex({Roll_no:1});
+{
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 1,
+        "numIndexesAfter" : 2,
+        "ok" : 1
+}
+> db.student.ensureIndex({Roll_no:1, "name":1});
+{
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 2,
+        "numIndexesAfter" : 3,
+        "ok" : 1
+}
+> db.student.ensureIndex({Roll_no:1, "name":-1});
+{
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 3,
+        "numIndexesAfter" : 4,
+        "ok" : 1
+}
+> db.student.mapReduce({Roll_no:1, "name":1});
+assert failed : need to supply an optionsOrOutString
+Error: assert failed : need to supply an optionsOrOutString
+    at Error (<anonymous>)
+    at doassert (src/mongo/shell/assert.js:11:14)
+    at assert (src/mongo/shell/assert.js:20:5)
+    at DBCollection.mapReduce (src/mongo/shell/collection.js:1343:5)
+    at (shell):1:12
+2016-09-25T23:46:00.806-0700 E QUERY    Error: assert failed : need to supply an
+ optionsOrOutString
+    at Error (<anonymous>)
+    at doassert (src/mongo/shell/assert.js:11:14)
+    at assert (src/mongo/shell/assert.js:20:5)
+    at DBCollection.mapReduce (src/mongo/shell/collection.js:1343:5)
+    at (shell):1:12 at src/mongo/shell/assert.js:13
+
+
+
+> db.student.mapReduce(
+...    function() { emit(this.user_id,1); },
+...
+...    function(key, values) {return Array.sum(values)}, {
+...       query:{sub:"DMSA"}, 
+...       out:"student_total"
+...    }
+... )
+{
+        "result" : "student_total",
+        "timeMillis" : 44,
+        "counts" : {
+                "input" : 1,
+                "emit" : 1,
+                "reduce" : 0,
+                "output" : 1
+        },
+        "ok" : 1
+}
+>
+
+
+
+
+
+
+
+
+
+
+
+
+*****************************************************
+1. Run the MongoDB Server (upto 5th Step)
+2. Open NetBeans Editor
+3. File-> New Project->....
+4. Copy the Mongodb.java code
+5. Add JAR File
+     - Right Click on Libraries
+     - Select "Add JAR/Folder"
+     - Add "mongo-2.10.1.jar" File
+6. Run the Java File
+*****************************************************

@@ -1,0 +1,7 @@
+administrative tools
+ODBC64 bit
+
+--dbpath "mongodb\data\db"
+
+javac file.java
+java file

@@ -1,0 +1,88 @@
+
+/*
+Title:-Aggregation and indexing with suitable example using MongoDB.
+
+
+
+*/
+*******OUTPUT***********
+pktc@pktc-Veriton-M480:~/mongodb-linux-x86_64-2.6.4/bin$ ./mongo
+MongoDB shell version: 2.6.4
+connecting to: test
+> db.student1.find()
+{ "_id" : ObjectId("54279166768fbdb2d6c25194"), "Name" : "aa", "Roll_no" : 1, "Sub" : "TOC", "Marks" : 80 }
+{ "_id" : ObjectId("54279174768fbdb2d6c25195"), "Name" : "bb", "Roll_no" : 2, "Sub" : "TOC", "Marks" : 100 }
+{ "_id" : ObjectId("54279188768fbdb2d6c25196"), "Name" : "cc", "Roll_no" : 3, "Sub" : "TOC", "Marks" : 90 }
+{ "_id" : ObjectId("54279197768fbdb2d6c25197"), "Name" : "dd", "Roll_no" : 4, "Sub" : "TOC", "Marks" : 95 }
+{ "_id" : ObjectId("542791d2768fbdb2d6c25198"), "Name" : "aa", "Roll_no" : 1, "Sub" : "DBMS", "Marks" : 70 }
+{ "_id" : ObjectId("542791e1768fbdb2d6c25199"), "Name" : "ee", "Roll_no" : 5, "Sub" : "DBMS", "Marks" : 80 }
+{ "_id" : ObjectId("542791ec768fbdb2d6c2519a"), "Name" : "ff", "Roll_no" : 6, "Sub" : "DBMS", "Marks" : 10 }
+> db.student1.aggregate({$project:{Name : 1}})
+{ "_id" : ObjectId("54279166768fbdb2d6c25194"), "Name" : "aa" }
+{ "_id" : ObjectId("54279174768fbdb2d6c25195"), "Name" : "bb" }
+{ "_id" : ObjectId("54279188768fbdb2d6c25196"), "Name" : "cc" }
+{ "_id" : ObjectId("54279197768fbdb2d6c25197"), "Name" : "dd" }
+{ "_id" : ObjectId("542791d2768fbdb2d6c25198"), "Name" : "aa" }
+{ "_id" : ObjectId("542791e1768fbdb2d6c25199"), "Name" : "ee" }
+{ "_id" : ObjectId("542791ec768fbdb2d6c2519a"), "Name" : "ff" }
+> db.student1.aggregate({$sort: {Name: -1}})
+{ "_id" : ObjectId("542791ec768fbdb2d6c2519a"), "Name" : "ff", "Roll_no" : 6, "Sub" : "DBMS", "Marks" : 10 }
+{ "_id" : ObjectId("542791e1768fbdb2d6c25199"), "Name" : "ee", "Roll_no" : 5, "Sub" : "DBMS", "Marks" : 80 }
+{ "_id" : ObjectId("54279197768fbdb2d6c25197"), "Name" : "dd", "Roll_no" : 4, "Sub" : "TOC", "Marks" : 95 }
+{ "_id" : ObjectId("54279188768fbdb2d6c25196"), "Name" : "cc", "Roll_no" : 3, "Sub" : "TOC", "Marks" : 90 }
+{ "_id" : ObjectId("54279174768fbdb2d6c25195"), "Name" : "bb", "Roll_no" : 2, "Sub" : "TOC", "Marks" : 100 }
+{ "_id" : ObjectId("54279166768fbdb2d6c25194"), "Name" : "aa", "Roll_no" : 1, "Sub" : "TOC", "Marks" : 80 }
+{ "_id" : ObjectId("542791d2768fbdb2d6c25198"), "Name" : "aa", "Roll_no" : 1, "Sub" : "DBMS", "Marks" : 70 }
+> db.student1.aggregate({$sort: {Name: 1}})
+{ "_id" : ObjectId("54279166768fbdb2d6c25194"), "Name" : "aa", "Roll_no" : 1, "Sub" : "TOC", "Marks" : 80 }
+{ "_id" : ObjectId("542791d2768fbdb2d6c25198"), "Name" : "aa", "Roll_no" : 1, "Sub" : "DBMS", "Marks" : 70 }
+{ "_id" : ObjectId("54279174768fbdb2d6c25195"), "Name" : "bb", "Roll_no" : 2, "Sub" : "TOC", "Marks" : 100 }
+{ "_id" : ObjectId("54279188768fbdb2d6c25196"), "Name" : "cc", "Roll_no" : 3, "Sub" : "TOC", "Marks" : 90 }
+{ "_id" : ObjectId("54279197768fbdb2d6c25197"), "Name" : "dd", "Roll_no" : 4, "Sub" : "TOC", "Marks" : 95 }
+{ "_id" : ObjectId("542791e1768fbdb2d6c25199"), "Name" : "ee", "Roll_no" : 5, "Sub" : "DBMS", "Marks" : 80 }
+{ "_id" : ObjectId("542791ec768fbdb2d6c2519a"), "Name" : "ff", "Roll_no" : 6, "Sub" : "DBMS", "Marks" : 10 }
+> db.student1.aggregate([{$project:{Name : 1}},{$limit : 3}])
+{ "_id" : ObjectId("54279166768fbdb2d6c25194"), "Name" : "aa" }
+{ "_id" : ObjectId("54279174768fbdb2d6c25195"), "Name" : "bb" }
+{ "_id" : ObjectId("54279188768fbdb2d6c25196"), "Name" : "cc" }
+> db.student1.aggregate( [ {$match:{Sub:"TOC"}}, {$group:{_id:"$Name",TOTAL:{$sum:"$Marks"}}}]) 
+{ "_id" : "cc", "TOTAL" : 90 }
+{ "_id" : "bb", "TOTAL" : 100 }
+{ "_id" : "dd", "TOTAL" : 95 }
+{ "_id" : "aa", "TOTAL" : 80 }
+> db.student1.aggregate([{$match:{Sub:"TOC"}}, {$group:{_id:"$Name",TOTAL:{$max:"$Marks"}}}])
+{ "_id" : "cc", "TOTAL" : 90 }
+{ "_id" : "bb", "TOTAL" : 100 }
+{ "_id" : "dd", "TOTAL" : 95 }
+{ "_id" : "aa", "TOTAL" : 80 }
+> db.student1.aggregate([{$match:{Sub:"TOC"}}, {$group:{_id:"$Name",TOTAL:{$min:"$Marks"}}}])
+{ "_id" : "cc", "TOTAL" : 90 }
+{ "_id" : "bb", "TOTAL" : 100 }
+{ "_id" : "dd", "TOTAL" : 95 }
+{ "_id" : "aa", "TOTAL" : 80 }
+> db.student1.aggregate( [ {$match:{Sub:"DBMS"}}, {$group:{_id:"$Name",TOTAL:{$push:"$Marks"}}} ]) 
+{ "_id" : "ff", "TOTAL" : [ 10 ] }
+{ "_id" : "ee", "TOTAL" : [ 80 ] }
+{ "_id" : "aa", "TOTAL" : [ 70 ] }
+> db.student1.aggregate( [ {$match:{Sub:"DBMS"}}, {$group:{_id:"$Name",TOTAL:{$addToSet:"$Marks"}}}])
+{ "_id" : "ff", "TOTAL" : [ 10 ] }
+{ "_id" : "ee", "TOTAL" : [ 80 ] }
+{ "_id" : "aa", "TOTAL" : [ 70 ] }
+> db.student1.aggregate( [ {$match:{Sub:"TOC"}}, {$group:{_id:"$Roll_no",TOTAL:{$addToSet:"$Marks"}}}])
+{ "_id" : 4, "TOTAL" : [ 95 ] }
+{ "_id" : 3, "TOTAL" : [ 90 ] }
+{ "_id" : 2, "TOTAL" : [ 100 ] }
+{ "_id" : 1, "TOTAL" : [ 80 ] }
+> db.student1.aggregate( [ {$match:{Sub:"TOC"}}, {$group:{_id:"$Name",TOTAL:{$first:"$Marks"}}}]) 
+{ "_id" : "cc", "TOTAL" : 90 }
+{ "_id" : "bb", "TOTAL" : 100 }
+{ "_id" : "dd", "TOTAL" : 95 }
+{ "_id" : "aa", "TOTAL" : 80 }
+> db.student1.aggregate( [ {$match:{Sub:"DBMS"}}, {$group:{_id:"$Name",TOTAL:{$last:"$Marks"}}}])
+{ "_id" : "ff", "TOTAL" : 10 }
+{ "_id" : "ee", "TOTAL" : 80 }
+{ "_id" : "aa", "TOTAL" : 70 }
+> > db.student1.distinct("Sub")
+[ "TOC", "DBMS" ]
+
+

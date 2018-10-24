@@ -1,0 +1,210 @@
+NAME:-
+ROLL NO:-
+TITLE:WRITE DATABASE TRIGGER
+
+**************************************************
+
+1)create trigger that audio s on emp table .
+   if operation like insert,update,delete done on emptable then insert into emp_audit
+   table information like the name of operation with id,user_id and date
+*************************************************************************
+create table emp_b(id number(4),dt date,user_id number(4),username varchar2(20));
+
+Table created.  
+
+create table emp_b_audit(id number(4),dt date,user_id number(4),username varchar2(20),operation varchar2(6));
+
+Table created.
+
+SQL> desc emp_b;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ID                                                 NUMBER(4)
+ DT                                                 DATE
+ USER_ID                                            NUMBER(4)
+ USERNAME                                           VARCHAR2(20)
+
+SQL> desc emp_b_audit;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ID                                                 NUMBER(4)
+ DT                                                 DATE
+ USER_ID                                            NUMBER(4)
+ USERNAME                                           VARCHAR2(20)
+ OPERATION                                          VARCHAR2(6)
+
+create or replace trigger trigger1
+after insert or update or delete on emp_b
+for each row
+declare
+begin
+if inserting then
+insert into emp_b_audit values (:new.id, :new.dt, :new.user_id,:new.username,'Insert');
+else if updating then
+insert into emp_b_audit values (:new.id, :new.dt, :new.user_id,:new.username,'Update');
+else
+insert into emp_b_audit values (:old.id, :old.dt, :old.user_id,:old.username,'Delete');
+end if;
+end if;
+end;
+/
+Trigger created.
+
+
+insert into emp_b values(10,'01-Jul-2013',200,'Sandeep');
+1 row created.
+
+insert into emp_b values(11,'01-Aug-2013',201,'Sana');
+1 row created.
+
+insert into emp_b values(12,'01-Oct-2013',202,'Reeta');
+1 row created.
+
+SQL> select * from emp_b;
+
+        ID DT           USER_ID USERNAME
+---------- --------- ---------- --------------------
+        10 01-JUL-13        200 Sandeep
+        11 01-AUG-13        201 Sana
+        12 01-OCT-13        202 Reeta
+
+update emp_b set dt='01-Sep-2013' where id=12;
+1 row updated.
+
+SQL> select * from emp_b;
+
+        ID DT           USER_ID USERNAME
+---------- --------- ---------- --------------------
+        10 01-JUL-13        200 Sandeep
+        11 01-AUG-13        201 Sana
+        12 01-SEP-13        202 Reeta
+
+
+delete from emp_b where id=12 ;
+1 row deleted.
+
+SQL>  select * from emp_b;
+
+        ID DT           USER_ID USERNAME
+---------- --------- ---------- --------------------
+        10 01-JUL-13        200 Sandeep
+        11 01-AUG-13        201 Sana
+
+
+SQL> select * from emp_b_audit;
+
+        ID DT           USER_ID USERNAME             OPERAT
+---------- --------- ---------- -------------------- ------
+        10 01-JUL-13        200 Sandeep              Insert
+        11 01-AUG-13        201 Sana                 Insert
+        12 01-OCT-13        202 Reeta                Insert
+        12 01-SEP-13        202 Reeta                Update
+        12 01-SEP-13        202 Reeta                Delete
+
+*************************************************************************
+
+2)create trigger to convert emp_name into uppercase before inserting or updating on employee table
+*************************************************************************
+create table emp_b1(emp_id number(4),emp_name varchar2(10),salary number(5),city varchar2(10));
+Table created.
+
+SQL> desc emp_b1;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMP_ID                                             NUMBER(4)
+ EMP_NAME                                           VARCHAR2(10)
+ SALARY                                             NUMBER(5)
+ CITY                                               VARCHAR2(10)
+
+create or replace trigger trigger2
+before insert or update on emp_b1 for each row
+declare
+begin
+insert into emp_b1 values(:new.emp_id,upper(:new.emp_name),:new.salary,:new.city);
+end;
+/
+
+
+insert into emp_b1 values(1,'abc',1000,'Pune');
+1 row created.
+
+insert into emp_b1 values(2,'pqr',2000,'Mumbai');
+1 row created.
+
+*************************************************************************
+
+3)create trigger to check salary is less than 20000 before inserting or updating on employee table
+*************************************************************************
+
+create or replace trigger tt3 before insert or update on eemp for each row when(new.salary<20000)
+
+begin
+insert into eemp values(:new.emp_id,:new.emp_name,:new.salary,:new.city);
+end tt3;
+/ 
+
+Trigger created.
+
+
+
+SQL>  insert into eemp values(10,'sandeep',30000,'pune');
+
+1 row created.
+
+SQL> select * from eemp;
+
+    EMP_ID EMP_NAME       SALARY CITY
+---------- ---------- ---------- ----------
+        10 sandeep         30000 pune
+
+
+SQL>  update eemp set salary=40000 where city='pune';
+
+1 row updated.
+
+SQL> select * from eemp;
+
+    EMP_ID EMP_NAME       SALARY CITY
+---------- ---------- ---------- ----------
+        10 sandeep         40000 pune
+
+
+*************************************************************************
+
+4)create trigger to display message after inserting or updating or deleting record on employee table
+*************************************************************************
+
+SQL> create table emplo(emp_id  number(4),emp_name varchar2(10),salary number(5),city varchar2(10));
+
+
+Table created.
+SQL> create or replace trigger tt6 before insert or update or delete on emplo for each row
+  2   begin
+  3    if inserting then
+  4   dbms_output.put_line('record is inserted');
+  5   elsif updating then
+  6  dbms_output.put_line('record is updated');
+  7  else
+  8  dbms_output.put_line('record is delete');
+  9  end if;
+ 10  end tt6;
+ 11  /
+
+Trigger created.
+
+SQL> insert into emplo values(10,'sandeep',10000,'pune');
+record is inserted
+
+1 row created.
+
+SQL> update emplo set salary=20000 where city='pune';
+record is updated
+
+
+1 rows updated.
+
+SQL> delete from emplo;
+record is delete
+
+1 rows deleted.
+ 
